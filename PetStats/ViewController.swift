@@ -15,17 +15,16 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        config()
-        // Do any additional setup after loading the view.
+        
+        self.setGradientLayer()
     }
 
-    func config() {
+    private func setGradientLayer() {
         
-//        let gradient = CAGradientLayer(start: .topLeft, end: .bottomRight, colors: [UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(1).cgColor], type: .axial)
         let gradient = CAGradientLayer()
         gradient.startPoint = CGPoint(x: 0, y: 0)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(0.0).cgColor, UIColor.black.withAlphaComponent(0.9).cgColor]
+        gradient.endPoint = CGPoint(x: 0, y: 0.9)
+        gradient.colors = [UIColor.black.withAlphaComponent(0.0).cgColor, UIColor.black.cgColor]
         gradient.type = .axial
         gradient.frame = vwGradientAlpha.bounds
         vwGradientAlpha.layer.addSublayer(gradient)
