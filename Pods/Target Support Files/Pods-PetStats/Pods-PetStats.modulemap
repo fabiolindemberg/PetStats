@@ -1,0 +1,6 @@
+framework module Pods_PetStats {
+  umbrella header "Pods-PetStats-umbrella.h"
+
+  export *
+  module * { export * }
+}

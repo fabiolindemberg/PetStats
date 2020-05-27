@@ -54,3 +54,31 @@ extension CAGradientLayer {
         self.type = type
     }
 }
+
+extension UIView {
+    func setAlphaGradientLayer() {
+        
+        let defaulCollor: UIColor = traitCollection.userInterfaceStyle == .dark ? .black : .white
+        
+        let gradient = CAGradientLayer()
+        gradient.startPoint = CGPoint(x: 0, y: 0)
+        gradient.endPoint = CGPoint(x: 0, y: 0.9)
+        gradient.colors = [defaulCollor.withAlphaComponent(0.0).cgColor, defaulCollor.cgColor]
+        gradient.type = .axial
+        gradient.frame = self.bounds
+        self.layer.addSublayer(gradient)
+    }
+    
+    func setShadow(fillColor: UIColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), cornerRadius: CGFloat = 10) {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOffset = CGSize(width: 2, height: 3)
+        layer.masksToBounds = false
+
+        layer.shadowOpacity = 0.3
+        layer.shadowRadius = 3
+        layer.cornerRadius = cornerRadius
+        layer.rasterizationScale = UIScreen.main.scale
+        layer.shouldRasterize = true
+    }
+
+}
