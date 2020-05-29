@@ -9,11 +9,12 @@
 import UIKit
 import SDWebImage
 
-class BreedViewController: UIViewController {
+class BreedViewController: UIViewController, BreedUI {
 
     @IBOutlet weak var imgDog: UIImageView!
     @IBOutlet weak var vwGradientAlpha: UIView!
     @IBOutlet weak var cvBreeds: UICollectionView!
+    @IBOutlet weak var sldLogevity: UISlider!
     
     var modelView = BreedModelView(model: BreedModel())
     
@@ -27,6 +28,46 @@ class BreedViewController: UIViewController {
         
         cvBreeds.dataSource = self
         cvBreeds.delegate = self
+        imgDog.alpha = 0
+    }
+    
+    // ----------------------
+    // MARK: BreedUI delegate
+    // ----------------------
+    var name: String = ""
+    var image: String = "" {
+        didSet {
+            if let url = URL(string: image) {
+                DispatchQueue.main.async {
+                    self.imgDog.sd_setImage(with: url, placeholderImage: #imageLiteral(resourceName: "dog-placeholder"), options: [], context: nil)
+                }
+            }
+        }
+    }
+    
+    var temperament: String = ""
+    
+    var lifeSpan: String = "" {
+        didSet {
+            let range = lifeSpan.split(separator: "-")
+            sldLogevity.value = Float(range.last ?? "10") ?? 10.0
+        }
+    }
+    
+    var isLoading: Bool = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isLoading {
+                    UIView.animate(withDuration: 0.15) {
+                        self.imgDog.alpha = 0
+                    }
+                } else {
+                    UIView.animate(withDuration: 0.15) {
+                        self.imgDog.alpha = 1
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -48,22 +89,24 @@ extension BreedViewController: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CollectionViewCell
-        modelView.fillUI(index: indexPath.row, breadUI: cell)
+        
+        if indexPath.row == 0 {
+            modelView.fillUI(index: indexPath.row, breedUI: [self, cell])
+        } else {
+            modelView.fillUI(index: indexPath.row, breedUI: cell)
+        }
+        
         return cell
+    }
+    
+    fileprivate func updateMainInfo(_ cell: CollectionViewCell) {
+        imgDog.image = cell.imgDog.image
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        UIView.animate(withDuration: 0.15) {
-            self.imgDog.alpha = 0
-        }
-        
-        let cell = collectionView.cellForItem(at: indexPath) as! CollectionViewCell
-        imgDog.image = cell.imgDog.image
-        
-        UIView.animate(withDuration: 0.15) {
-            self.imgDog.alpha = 1
-        }
+        modelView.fillUI(index: indexPath.row, breedUI: self)
     }
 }

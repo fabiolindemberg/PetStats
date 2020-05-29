@@ -14,11 +14,12 @@ protocol ModelViewDelegate {
 }
 
 protocol BreedUI {
-    var id: Int { get set }
+    //var id: Int { get set }
     var name: String { get set }
     var image: String { get set }
     var temperament: String { get set }
     var lifeSpan: String { get set }
+    var isLoading: Bool { get set }
 }
 
 class BreedModelView {
@@ -44,19 +45,45 @@ class BreedModelView {
         }
     }
     
+    private func loadImageInfo(by breadId: Int, completionHandler: @escaping (_ imageInfo: ImageInfo?)-> Void) {
+        self.model.getImageInfo(by: breadId) { imageInfo, error in
+            completionHandler(imageInfo)
+        }
+    }
+    
     func breedsCount() -> Int {
         return breeds.count
     }
     
-    func fillUI(index: Int, breadUI: BreedUI) {
-        let breed = self.breeds[index]
-        
-        var breedUI = breadUI
-        breedUI.id = breed.id
-        breedUI.name = breed.name
-//        breedUI.image = breed.imageUrl ?? ""
-        breedUI.lifeSpan = breed.lifeSpan ?? ""
-        breedUI.temperament = breed.temperament ?? ""
+    func fillUI(index: Int, breedUI: [BreedUI]) {
+        breedUI.forEach { element in
+            self.fillUI(index: index, breedUI: element)
+        }
     }
     
+    func fillUI(index: Int, breedUI: BreedUI) {
+        
+        var mutableBreedUI = breedUI
+        mutableBreedUI.isLoading = true
+        mutableBreedUI.name = self.breeds[index].name
+        mutableBreedUI.lifeSpan = adjustRange(from: self.breeds[index].lifeSpan ?? "")
+        mutableBreedUI.temperament = self.breeds[index].temperament ?? ""
+        
+        guard self.breeds[index].imageUrl == nil else {
+            mutableBreedUI.image = self.breeds[index].imageUrl ?? ""
+            mutableBreedUI.isLoading = false
+            return
+        }
+        
+        self.loadImageInfo(by: self.breeds[index].id) { imageInfo in
+            self.breeds[index].imageUrl = imageInfo?.url
+            mutableBreedUI.image = imageInfo?.url ?? ""
+            mutableBreedUI.isLoading = false
+        }
+    }
+    
+    func adjustRange(from text: String) -> String {
+        return text.replacingOccurrences(of: " - ", with: "-")
+            .replacingOccurrences(of: " years", with: "")
+    }
 }

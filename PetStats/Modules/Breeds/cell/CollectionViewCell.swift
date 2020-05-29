@@ -17,20 +17,10 @@ class CollectionViewCell: UICollectionViewCell, BreedUI {
     @IBOutlet weak var imgDog: UIImageView!
     @IBOutlet weak var vwGradientAlpha: UIView!
     
-    var id: Int = 0 {
+    var isLoading: Bool = false {
         didSet {
-            if id > 0 {
-                
-                BreedModel().getImageInfo(by: id) { imageInfo, error in
-                    
-                    guard error == nil else {
-                        return
-                    }
-                    
-                    if let url = imageInfo?.url {
-                        self.image = url
-                    }
-                }
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = self.isLoading ? 0 : 1
             }
         }
     }
@@ -43,7 +33,6 @@ class CollectionViewCell: UICollectionViewCell, BreedUI {
     
     var image: String = "" {
         didSet {
-        
             if let url = URL(string: image) {
                 DispatchQueue.main.async {
                     self.imgDog.sd_setImage(with: url, placeholderImage: #imageLiteral(resourceName: "dog-placeholder"), options: [], context: nil)
@@ -67,7 +56,5 @@ class CollectionViewCell: UICollectionViewCell, BreedUI {
             lblLifeSpan.text = lifeSpan
         }
     }
-    
-
 }
 

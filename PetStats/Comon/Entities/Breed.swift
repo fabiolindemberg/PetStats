@@ -14,7 +14,7 @@ struct Breed: Codable {
     let name: String
     let origin: String?
     let temperament: String?
-    let imageUrl: String?
+    var imageUrl: String?
     
     enum CodingKeys: String, CodingKey{
         case id
